@@ -194,9 +194,10 @@ body[data-page="fleet"] .mw-page-hero-media-note{z-index:7;left:52px;bottom:42px
   .mw-fleet-float-search{left:5px}
 }
 @media(max-width:760px){
-  /* Mobile page content is an explicit visual canvas. Animated ticker/marquee
-     descendants and swipe rails may be wider internally, but must never make
-     the browser document itself horizontally scrollable. */
+  /* The application owns one vertical document canvas on phones. Individual
+     carousels remain horizontally scrollable inside their own overflow:auto
+     regions, but animated/off-canvas descendants cannot move the page itself. */
+  html,body{max-width:100%;overflow-x:clip}
   .mw-page{max-width:100%;overflow-x:clip}
   .mw-brand-marquee,
   .mw-hero-ticker,
