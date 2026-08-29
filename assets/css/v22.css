@@ -16,6 +16,9 @@ html[data-theme="dark"] .mw-vehicle-media{background:linear-gradient(135deg,#172
   margin:-10px 0 14px;
 }
 
+/* Closed off-canvas drawers must not expand the browser's scrollable area. */
+.mw-drawer[aria-hidden="true"]{display:none!important}
+
 /* Restored global back-to-top affordance from Initial release. */
 .mw-back-top{
   position:fixed;
@@ -191,6 +194,15 @@ body[data-page="fleet"] .mw-page-hero-media-note{z-index:7;left:52px;bottom:42px
   .mw-fleet-float-search{left:5px}
 }
 @media(max-width:760px){
+  /* These components intentionally contain content wider than the viewport.
+     Paint containment belongs here because none of it should escape its visual section. */
+  .mw-brand-marquee,
+  .mw-hero-ticker,
+  .mw-business-preview-card,
+  .mw-vehicle-row-wrap,
+  .mw-collection-shell{
+    contain:paint;
+  }
   .mw-vehicle-row-wrap,.mw-collection-shell{
     width:100%;
     max-width:100%;
