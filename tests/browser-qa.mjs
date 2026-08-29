@@ -36,7 +36,17 @@ async function openChecked(page, name, route) {
     }).filter(x=>(x.right>cw+2&&x.left<cw+48)||(x.left<-2&&x.right>-48)).sort((a,b)=>Math.max(b.right-cw,-b.left)-Math.max(a.right-cw,-a.left)).slice(0,12);
     return {sw:de.scrollWidth,cw,offenders};
   });
-  if (overflow.sw > overflow.cw + 2) throw new Error(`${name}: horizontal overflow ${overflow.sw} > ${overflow.cw}; offenders=${JSON.stringify(overflow.offenders)}`);
+  if (overflow.sw > overflow.cw + 2) {
+    const actualScroll = await page.evaluate(async () => {
+      const y=scrollY;
+      scrollTo(999999,y);
+      await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+      const x=Math.abs(scrollX);
+      scrollTo(0,y);
+      return x;
+    });
+    if (actualScroll > 2) throw new Error(`${name}: horizontally scrollable by ${actualScroll}px (${overflow.sw} > ${overflow.cw}); offenders=${JSON.stringify(overflow.offenders)}`);
+  }
 
   if (errors.length) throw new Error(`${name}: page errors: ${errors.join(' | ')}`);
   const relevantConsole = consoleErrors.filter(x => !/favicon|Failed to load resource.*404/i.test(x));
