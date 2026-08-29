@@ -194,8 +194,10 @@ body[data-page="fleet"] .mw-page-hero-media-note{z-index:7;left:52px;bottom:42px
   .mw-fleet-float-search{left:5px}
 }
 @media(max-width:760px){
-  /* These components intentionally contain content wider than the viewport.
-     Paint containment belongs here because none of it should escape its visual section. */
+  /* Mobile page content is an explicit visual canvas. Animated ticker/marquee
+     descendants and swipe rails may be wider internally, but must never make
+     the browser document itself horizontally scrollable. */
+  .mw-page{max-width:100%;overflow-x:clip}
   .mw-brand-marquee,
   .mw-hero-ticker,
   .mw-business-preview-card,
