@@ -1,0 +1,70 @@
+name: Quality checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: JavaScript syntax
+        run: |
+          node --check app.js
+          node --check api/health.js
+          node --check api/quote.js
+      - name: Static document integrity
+        run: |
+          python3 - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+
+          html = Path('index.html').read_text(encoding='utf-8')
+          class Parser(HTMLParser):
+              pass
+          Parser().feed(html)
+          required = [
+              'id="heroSearch"', 'id="fleetGrid"', 'id="cartDrawer"',
+              'id="checkoutModal"', 'id="historyModal"', 'id="accountModal"',
+              'Rishikesh M', '+91 90590 76106',
+              'https://github.com/Rishikeshsanin/miles-and-wheels'
+          ]
+          missing = [item for item in required if item not in html]
+          assert not missing, f'Missing required UI/content: {missing}'
+          css = Path('styles.css').read_text(encoding='utf-8')
+          for breakpoint in ['@media (max-width: 1050px)', '@media (max-width: 760px)', '@media (max-width: 480px)']:
+              assert breakpoint in css, f'Missing responsive rule: {breakpoint}'
+          print('HTML/CSS integrity checks passed')
+          PY
+      - name: Stateless quote API test
+        run: |
+          node <<'NODE'
+          const handler = require('./api/quote.js');
+          function invoke(body) {
+            return new Promise((resolve, reject) => {
+              const req = { method: 'POST', body };
+              const res = {
+                headers: {}, statusCode: 200,
+                setHeader(k,v){ this.headers[k]=v; },
+                status(code){ this.statusCode=code; return this; },
+                json(payload){ resolve({ status:this.statusCode, payload, headers:this.headers }); }
+              };
+              try { handler(req, res); } catch (e) { reject(e); }
+            });
+          }
+          (async () => {
+            const ok = await invoke({ items:[{id:'swift',quantity:2,days:3},{id:'activa',quantity:1,days:2}] });
+            if (ok.status !== 200) throw new Error('Expected successful quote');
+            if (ok.payload.subtotal !== 16224) throw new Error(`Unexpected subtotal ${ok.payload.subtotal}`);
+            if (ok.payload.service !== 568) throw new Error(`Unexpected service ${ok.payload.service}`);
+            if (ok.payload.tax !== 3023) throw new Error(`Unexpected tax ${ok.payload.tax}`);
+            if (ok.payload.payable !== 19815) throw new Error(`Unexpected payable ${ok.payload.payable}`);
+            if (ok.payload.deposit !== 7200) throw new Error(`Unexpected deposit ${ok.payload.deposit}`);
+            if (ok.payload.stored !== false) throw new Error('Quote API must remain stateless');
+            const bad = await invoke({ items:[{id:'swift',quantity:1.5,days:1}] });
+            if (bad.status !== 400) throw new Error('Decimal quantity should be rejected');
+            console.log('Quote API checks passed');
+          })().catch(err => { console.error(err); process.exit(1); });
+          NODE
