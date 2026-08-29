@@ -31,8 +31,9 @@ async function openChecked(page, name, route) {
     const cw=de.clientWidth;
     const offenders=[...document.querySelectorAll('body *')].map(el=>{
       const r=el.getBoundingClientRect();
-      return {tag:el.tagName,cls:el.className||'',id:el.id||'',left:Math.round(r.left),right:Math.round(r.right),w:Math.round(r.width)};
-    }).filter(x=>x.right>cw+2||x.left<-2).sort((a,b)=>Math.max(b.right-cw,-b.left)-Math.max(a.right-cw,-a.left)).slice(0,8);
+      const cs=getComputedStyle(el);
+      return {tag:el.tagName,cls:el.className||'',id:el.id||'',left:Math.round(r.left),right:Math.round(r.right),w:Math.round(r.width),overflowX:cs.overflowX,position:cs.position};
+    }).filter(x=>(x.right>cw+2&&x.left<cw+48)||(x.left<-2&&x.right>-48)).sort((a,b)=>Math.max(b.right-cw,-b.left)-Math.max(a.right-cw,-a.left)).slice(0,12);
     return {sw:de.scrollWidth,cw,offenders};
   });
   if (overflow.sw > overflow.cw + 2) throw new Error(`${name}: horizontal overflow ${overflow.sw} > ${overflow.cw}; offenders=${JSON.stringify(overflow.offenders)}`);
@@ -45,7 +46,6 @@ async function openChecked(page, name, route) {
 const page = await context.newPage();
 for (const [name, route] of routes) await openChecked(page, name, route);
 
-// First visit is always light unless the visitor has explicitly saved a preference.
 await page.goto(`${base}/index.html`, { waitUntil: 'domcontentloaded' });
 await page.waitForSelector('#mwThemeToggle');
 const beforeTheme = await page.evaluate(() => document.documentElement.dataset.theme);
@@ -54,7 +54,6 @@ await page.click('#mwThemeToggle');
 const afterTheme = await page.evaluate(() => document.documentElement.dataset.theme);
 if (beforeTheme === afterTheme) throw new Error('Theme toggle did not change theme');
 
-// Search must find the known iQube entry, never show a broken image, and stay above hero/carousel content.
 const search = page.locator('#mwGlobalSearch');
 await search.fill('iqube');
 await page.waitForSelector('#mwSearchResults:not([hidden]) .mw-search-result', { timeout: 10000 });
@@ -75,7 +74,6 @@ const searchOverlayOK = await page.evaluate(() => {
 if(!searchOverlayOK)throw new Error('Search results are clipped or covered by page/carousel content');
 await search.fill('');
 
-// Sticky search/location dock must remain stable around the compact threshold.
 await page.evaluate(() => scrollTo(0, 260));
 await page.waitForTimeout(400);
 const samples = [];
@@ -91,14 +89,12 @@ const heights = samples.map(x => x.h);
 if (states.size !== 1) throw new Error(`Utility dock jittered compact state: ${JSON.stringify(samples)}`);
 if (Math.max(...heights)-Math.min(...heights) > 2) throw new Error(`Utility dock jittered height: ${heights.join(',')}`);
 
-// Restored back-to-top control.
 await page.evaluate(() => scrollTo(0, document.body.scrollHeight));
 await page.waitForTimeout(350);
 if (!(await page.locator('#mwBackTop').isVisible())) throw new Error('Back-to-top did not become visible');
 await page.click('#mwBackTop');
 await page.waitForFunction(() => scrollY < 80, null, { timeout: 5000 });
 
-// Fleet: render every catalog card, repair every image, and exercise comparison/cart.
 await page.goto(`${base}/fleet.html`, { waitUntil: 'domcontentloaded' });
 await page.waitForSelector('#fleetPageGrid .mw-vehicle-card');
 const cardCount = await page.locator('#fleetPageGrid .mw-vehicle-card').count();
@@ -130,10 +126,8 @@ await page.locator('#mwProfileModal [data-mw-close="modal"]').click();
 await page.waitForTimeout(150);
 if (!(await page.locator('#mwProfileModal').evaluate(el => el.hidden))) throw new Error('Profile modal did not close');
 
-// Fleet hero restoration should exist.
 if (!(await page.locator('.mw-page-hero-media .mw-fleet-ambient').count())) throw new Error('Fleet ambient animation layer missing');
 
-// Mobile regression scan.
 const mobile = await browser.newPage({ viewport: { width: 390, height: 844 } });
 for (const [name, route] of routes) {
   await openChecked(mobile, `mobile-${name}`, route);
