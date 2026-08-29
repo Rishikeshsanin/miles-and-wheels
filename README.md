@@ -1,67 +1,130 @@
 # Miles & Wheels
 
-A polished, privacy-first car and bike rental storefront concept for India.
+[![Quality checks](https://github.com/Rishikeshsanin/miles-and-wheels/actions/workflows/quality.yml/badge.svg)](https://github.com/Rishikeshsanin/miles-and-wheels/actions/workflows/quality.yml)
 
-Miles & Wheels is intentionally built as a frontend-first release: visitors can browse a realistic rental fleet, search with typo tolerance, detect their location for display only, build a multi-vehicle trip, configure integer quantities and rental days, review a full billing breakdown, place a demo booking, and reopen local booking history without creating a server-side account.
+A polished, privacy-first **car and bike rental storefront for India**. This first release focuses on a production-quality customer experience while deliberately avoiding unnecessary collection of personal data.
 
-## What makes this release different
+## Product experience
 
-- **No authentication database** — create account / sign in only stores the display name in the browser.
-- **No user data collection** — no email, password, phone number, ID or payment data is sent to a backend.
-- **Location is display-only** — geolocation never changes prices, inventory, search results or recommendations.
-- **Typo-tolerant live search** — suggestions update on every character and handle common misspellings such as `swft` → Swift or `actva` → Activa.
-- **Real booking flow** — cart, integer quantity controls, rental duration, service fee, GST, refundable security-deposit display, pickup details and a professional confirmation screen.
-- **Local booking history** — saved in `localStorage` so it works without a database.
-- **Responsive UI** — designed for desktop, laptop, tablet and mobile.
-- **Zero-build deployment** — plain HTML/CSS/JavaScript for high reliability and instant static hosting.
+Visitors can browse a 20-vehicle fleet, search with typo tolerance, display their current location, build a multi-vehicle trip, configure integer quantities and rental days, review an itemized bill, place a demo booking and reopen their booking history—all without creating a server-side account.
 
-## Fleet and pricing approach
+### Highlights
 
-Demo prices were calibrated against public self-drive rental listings in India rather than invented at random. Actual commercial pricing would eventually need a live inventory and pricing service, taxes by jurisdiction, availability windows, insurance rules, KYC and payment settlement.
+- **Cars + bikes + scooters** in one responsive rental experience.
+- **Live search suggestions on every character** with fuzzy matching for inputs such as `swft` → Swift and `actva` → Activa.
+- **Popular rides and full fleet browsing** with vehicle-type filters and price/name sorting.
+- **Display-only location detection**—location never changes pricing, inventory, recommendations or the UI catalog.
+- **Integer-only quantities** and configurable rental duration from 1–30 days.
+- **Professional billing flow** with rental subtotal, service fee, GST, refundable security-deposit disclosure and final payable amount.
+- **Device-only profile** for create-account / sign-in / sign-out behaviour without real authentication.
+- **Local booking history** with generated booking IDs and pickup details.
+- **Favourites and cart persistence** through browser `localStorage`.
+- **Responsive design** for desktop, laptop, tablet and mobile.
+- **Accessible basics** including semantic structure, labels, keyboard-close behaviour, reduced-motion support and a skip link.
 
-Current example ranges used in the UI:
+## Privacy-first architecture
 
-- Cars: roughly ₹2.1k/day for compact hatchbacks through ~₹7.9k/day for premium 7-seat vehicles.
-- Scooters: roughly ₹550–₹700/day.
-- Motorcycles: roughly ₹840/day for common street bikes through ~₹2.5k/day for premium touring/adventure models.
+This release has **no user database**.
 
-## Tech
-
-- Semantic HTML5
-- Responsive CSS (no framework dependency)
-- Vanilla JavaScript
-- Browser Geolocation API
-- BigDataCloud reverse-geocode client endpoint with coordinate fallback
-- `localStorage` for profile, cart, favourites and booking history
-- Vercel-ready static configuration
-- GitHub Pages workflow included
-
-## Run locally
-
-Open `index.html` directly, or serve the directory with any static server for full geolocation behaviour.
-
-## Privacy model
-
-The following values can exist in the visitor's own browser:
+The browser may locally retain:
 
 - display name
 - cart contents
 - favourites
 - local booking history
 
-They can be removed with **Clear local data** in the footer. This release does not include a database or real account authentication.
+The footer provides **Clear local data** to remove those values. No email, password, phone number, ID document or payment information is collected by the application.
 
-## Roadmap for a real business release
+The location feature uses browser geolocation and reverse-geocoding only to show the visitor where they are. The resulting location does not influence the catalog or prices.
 
-A later production backend can add live vehicle availability, city-specific depots, KYC/document verification, secure user accounts, payments, refunds, coupons, insurance packages, fleet operations, admin tooling, booking state transitions, notifications and analytics without changing the core customer experience.
+## Stateless backend
+
+`POST /api/quote` validates the selected vehicle IDs, integer quantities and rental durations against a server-side price book before calculating:
+
+- rental subtotal
+- 3.5% service fee
+- 18% GST
+- refundable security deposit
+- payable amount
+
+The endpoint stores **nothing**. If the application is opened as a purely static site, the UI has an equivalent local calculation fallback.
+
+`GET /api/health` provides a minimal health response and explicitly reports that storage is not used.
+
+## Fleet and pricing approach
+
+Demo prices were calibrated against public self-drive rental listings in India instead of being chosen arbitrarily. They are illustrative—not live commercial quotes.
+
+Typical ranges represented in v1:
+
+| Category | Example range |
+| --- | ---: |
+| Compact / premium cars | ~₹2,160–₹4,680 per day |
+| Large / premium 7-seat cars | ~₹6,240–₹7,944 per day |
+| Scooters | ~₹552–₹672 per day |
+| Motorcycles | ~₹840–₹2,519 per day |
+
+A future real-business release would replace this catalog with live inventory, city/depot availability, insurance rules and dynamic commercial pricing.
+
+## Technology
+
+- Semantic HTML5
+- Responsive CSS with custom design system
+- Vanilla JavaScript
+- Browser Geolocation API
+- BigDataCloud reverse-geocode client endpoint with coordinate fallback
+- `localStorage` for device-local profile, cart, favourites and booking history
+- Vercel Serverless Functions for stateless quote/health APIs
+- GitHub Actions quality checks
+- Vercel-ready production headers and configuration
+
+## Quality checks
+
+Every push to `main` validates the repository-hosted source with GitHub Actions:
+
+1. JavaScript syntax for the frontend and both API functions.
+2. HTML parsing and presence of required booking/account/privacy UI.
+3. Responsive breakpoint rules.
+4. Quote calculation accuracy.
+5. Rejection of decimal quantities.
+6. Verification that the quote endpoint remains stateless.
+
+## Project structure
+
+```text
+miles-and-wheels/
+├── .github/workflows/quality.yml
+├── api/
+│   ├── health.js
+│   └── quote.js
+├── assets/favicon.svg
+├── app.js
+├── index.html
+├── styles.css
+├── site.webmanifest
+├── robots.txt
+├── vercel.json
+├── LICENSE
+└── README.md
+```
+
+## Run locally
+
+Serve the project root with any static development server and open `index.html`. A server is recommended because browser location permissions behave more consistently on an HTTP origin than when a file is opened directly.
+
+The `/api/*` routes are designed for Vercel; the customer flow still works without them through the stateless frontend fallback.
+
+## Production roadmap
+
+A later serious-business backend can add live vehicle availability, city-specific pickup hubs, KYC/document verification, secure authentication, payments, refunds, coupons, insurance packages, fleet operations, admin tooling, booking state transitions, notifications and analytics without changing the core customer journey established here.
 
 ## Credits
 
-**Rishikesh M**  
+Built by **Rishikesh M**  
 +91 90590 76106
 
-Repository: `https://github.com/Rishikeshsanin/miles-and-wheels`
+GitHub: https://github.com/Rishikeshsanin/miles-and-wheels
 
 ## License
 
-MIT
+MIT License — see [`LICENSE`](LICENSE).
