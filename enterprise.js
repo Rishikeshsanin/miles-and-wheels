@@ -243,6 +243,96 @@
     setTimeout(() => status.classList.add('enterprise-status-ready'), 900);
   }
 
+  function installInteractionStabilityStyles() {
+    if ($('#interactionStabilityStyles')) return;
+    const style = document.createElement('style');
+    style.id = 'interactionStabilityStyles';
+    style.textContent = `
+      [hidden] { display:none !important; }
+      .modal[hidden], .scrim[hidden], .mobile-menu[hidden], .search-suggestions[hidden] {
+        display:none !important;
+        visibility:hidden !important;
+        pointer-events:none !important;
+      }
+      .modal:not([hidden]) { visibility:visible; pointer-events:auto; }
+      .fx-cursor-dot, .fx-cursor-ring, .fx-pointer-glow { display:none !important; }
+      html, body, body.fx-cursor-ready { cursor:auto !important; }
+      a, button, summary, [role="button"],
+      body.fx-cursor-ready a, body.fx-cursor-ready button,
+      body.fx-cursor-ready summary, body.fx-cursor-ready [role="button"] { cursor:pointer !important; }
+      input[type="text"], input[type="search"], input[type="date"], input[type="time"], textarea,
+      body.fx-cursor-ready input[type="text"], body.fx-cursor-ready input[type="search"],
+      body.fx-cursor-ready input[type="date"], body.fx-cursor-ready input[type="time"],
+      body.fx-cursor-ready textarea { cursor:text !important; }
+      select, body.fx-cursor-ready select { cursor:default !important; }
+      .success-card > .stability-success-close {
+        position:absolute;
+        top:18px;
+        right:18px;
+        z-index:30;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  function restoreNativePointer() {
+    document.body.classList.remove('fx-cursor-ready');
+    ['#fxCursorDot', '#fxCursorRing', '#fxPointerGlow'].forEach((selector) => $(selector)?.remove());
+    document.documentElement.style.removeProperty('--fx-x');
+    document.documentElement.style.removeProperty('--fx-y');
+  }
+
+  function fullyReleaseOverlay() {
+    const scrim = $('#scrim');
+    if (scrim) scrim.hidden = true;
+    document.body.classList.remove('no-scroll', 'modal-open', 'drawer-open');
+    document.body.style.removeProperty('overflow');
+  }
+
+  function forceHideAllModals() {
+    $$('.modal').forEach((modal) => {
+      modal.hidden = true;
+      modal.setAttribute('aria-hidden', 'true');
+    });
+    fullyReleaseOverlay();
+  }
+
+  function ensureSuccessCloseControl() {
+    const card = $('#successModal .success-card');
+    if (!card || $('.stability-success-close', card)) return;
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'close-btn modal-close stability-success-close';
+    button.setAttribute('aria-label', 'Close trip confirmation');
+    button.textContent = '×';
+    card.prepend(button);
+  }
+
+  function setupGuaranteedSuccessActions() {
+    document.addEventListener('click', (event) => {
+      const back = event.target.closest('#successDoneButton');
+      if (back) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        forceHideAllModals();
+        requestAnimationFrame(() => $('#fleet')?.scrollIntoView({ behavior:reduced ? 'auto' : 'smooth', block:'start' }));
+        return;
+      }
+
+      const history = event.target.closest('#successHistoryButton');
+      if (history) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        forceHideAllModals();
+        window.setTimeout(() => ($('#showHistoryButton') || $('#historyFooterButton'))?.click(), 0);
+      }
+    }, true);
+  }
+
+  installInteractionStabilityStyles();
+  restoreNativePointer();
+  ensureSuccessCloseControl();
+  setupGuaranteedSuccessActions();
   removeLegacyPrivacyUI();
   setupDefensiveModalClosing();
   setupCopyGuard();
@@ -254,4 +344,5 @@
   setupTripAttention();
   setupImageLoadPolish();
   setupPageStatus();
+  window.addEventListener('pageshow', restoreNativePointer);
 })();
