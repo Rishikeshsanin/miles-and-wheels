@@ -1,4 +1,1 @@
-module.exports = function handler(req, res) {
-  res.setHeader('Cache-Control', 'no-store');
-  res.status(200).json({ ok: true, service: 'miles-and-wheels', storage: 'none' });
-};
+module.exports=function handler(req,res){res.setHeader('Cache-Control','no-store');return res.status(200).json({ok:true,service:'miles-and-wheels',release:'v2-frontend-flagship',storage:'none'})};
