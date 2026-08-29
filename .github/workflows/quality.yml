@@ -14,37 +14,58 @@ jobs:
         run: |
           node --check app.js
           node --check motion.js
+          node --check enterprise.js
           node --check api/health.js
           node --check api/quote.js
-      - name: Static document integrity
+      - name: Customer experience integrity
         run: |
           python3 - <<'PY'
           from html.parser import HTMLParser
           from pathlib import Path
+          import re
 
           html = Path('index.html').read_text(encoding='utf-8')
+          css = Path('styles.css').read_text(encoding='utf-8')
+          motion = Path('motion.css').read_text(encoding='utf-8')
+          enterprise = Path('enterprise.css').read_text(encoding='utf-8')
+          enterprise_js = Path('enterprise.js').read_text(encoding='utf-8')
+
           class Parser(HTMLParser):
               pass
           Parser().feed(html)
+
           required = [
               'id="heroSearch"', 'id="fleetGrid"', 'id="cartDrawer"',
               'id="checkoutModal"', 'id="historyModal"', 'id="accountModal"',
-              'motion.css', 'motion.js',
+              'id="successModal"', 'id="detectLocationButton"',
+              'id="experiences"', 'id="cities"', 'id="support"',
+              'enterprise.css', 'enterprise.js', 'motion.css', 'motion.js',
               'Rishikesh M', '+91 90590 76106',
               'https://github.com/Rishikeshsanin/miles-and-wheels'
           ]
           missing = [item for item in required if item not in html]
-          assert not missing, f'Missing required UI/content: {missing}'
-          css = Path('styles.css').read_text(encoding='utf-8')
+          assert not missing, f'Missing required customer UI/content: {missing}'
+
+          assert 'PRIVACY IN V1' not in html, 'Legacy privacy modal content returned'
+          assert 'data-compat-only="true"' in html, 'Legacy app compatibility hook missing'
+          assert 'removeLegacyPrivacyUI' in enterprise_js, 'Compatibility privacy hook is not removed at runtime'
+
+          ids = re.findall(r'\bid="([^"]+)"', html)
+          duplicates = sorted({x for x in ids if ids.count(x) > 1})
+          assert not duplicates, f'Duplicate DOM ids: {duplicates}'
+
           for breakpoint in ['@media (max-width: 1050px)', '@media (max-width: 760px)', '@media (max-width: 480px)']:
-              assert breakpoint in css, f'Missing responsive rule: {breakpoint}'
-          motion_css = Path('motion.css').read_text(encoding='utf-8')
-          motion_js = Path('motion.js').read_text(encoding='utf-8')
-          for marker in ['@keyframes fxHeroShine', '@keyframes fxMarquee', '@keyframes fxConfetti', '@media (prefers-reduced-motion:reduce)']:
-              assert marker in motion_css, f'Missing premium motion rule: {marker}'
-          for marker in ['setupRevealSystem', 'setupPointer', 'bindVehicleCards', 'setupSuccessFeedback', 'setupHeroParallax']:
-              assert marker in motion_js, f'Missing interaction module: {marker}'
-          print('HTML/CSS/motion integrity checks passed')
+              assert breakpoint in css, f'Missing base responsive rule: {breakpoint}'
+          for marker in ['@media (prefers-reduced-motion:reduce)', '@keyframes fxHeroShine', '@keyframes fxConfetti']:
+              assert marker in motion, f'Missing motion/accessibility rule: {marker}'
+          for marker in ['.enterprise-journey-grid', '.enterprise-cinematic', '.enterprise-standard-grid', '.enterprise-work', '.enterprise-support', '@media (max-width:640px)']:
+              assert marker in enterprise, f'Missing enterprise product styling: {marker}'
+          for marker in ['setupDefensiveModalClosing', 'setupJourneyControls', 'setupActiveNavigation', 'removeLegacyPrivacyUI', 'setupCopyGuard']:
+              assert marker in enterprise_js, f'Missing enterprise interaction safety: {marker}'
+
+          assert len(enterprise.splitlines()) >= 250, 'Enterprise styling layer unexpectedly small'
+          assert len(enterprise_js.splitlines()) >= 200, 'Enterprise interaction layer unexpectedly small'
+          print('Customer experience integrity checks passed')
           PY
       - name: Stateless quote API test
         run: |
@@ -71,8 +92,10 @@ jobs:
             if (ok.payload.payable !== 19815) throw new Error(`Unexpected payable ${ok.payload.payable}`);
             if (ok.payload.deposit !== 7200) throw new Error(`Unexpected deposit ${ok.payload.deposit}`);
             if (ok.payload.stored !== false) throw new Error('Quote API must remain stateless');
-            const bad = await invoke({ items:[{id:'swift',quantity:1.5,days:1}] });
-            if (bad.status !== 400) throw new Error('Decimal quantity should be rejected');
+            const badQty = await invoke({ items:[{id:'swift',quantity:1.5,days:1}] });
+            if (badQty.status !== 400) throw new Error('Decimal quantity should be rejected');
+            const badDays = await invoke({ items:[{id:'swift',quantity:1,days:31}] });
+            if (badDays.status !== 400) throw new Error('Rental days above 30 should be rejected');
             console.log('Quote API checks passed');
           })().catch(err => { console.error(err); process.exit(1); });
           NODE
