@@ -26,11 +26,16 @@ async function openChecked(page, name, route) {
   await page.waitForSelector('.mw-footer', { timeout: 10000 });
   await page.waitForTimeout(500);
 
-  const overflow = await page.evaluate(() => ({
-    sw: document.documentElement.scrollWidth,
-    cw: document.documentElement.clientWidth
-  }));
-  if (overflow.sw > overflow.cw + 2) throw new Error(`${name}: horizontal overflow ${overflow.sw} > ${overflow.cw}`);
+  const overflow = await page.evaluate(() => {
+    const de=document.documentElement;
+    const cw=de.clientWidth;
+    const offenders=[...document.querySelectorAll('body *')].map(el=>{
+      const r=el.getBoundingClientRect();
+      return {tag:el.tagName,cls:el.className||'',id:el.id||'',left:Math.round(r.left),right:Math.round(r.right),w:Math.round(r.width)};
+    }).filter(x=>x.right>cw+2||x.left<-2).sort((a,b)=>Math.max(b.right-cw,-b.left)-Math.max(a.right-cw,-a.left)).slice(0,8);
+    return {sw:de.scrollWidth,cw,offenders};
+  });
+  if (overflow.sw > overflow.cw + 2) throw new Error(`${name}: horizontal overflow ${overflow.sw} > ${overflow.cw}; offenders=${JSON.stringify(overflow.offenders)}`);
 
   if (errors.length) throw new Error(`${name}: page errors: ${errors.join(' | ')}`);
   const relevantConsole = consoleErrors.filter(x => !/favicon|Failed to load resource.*404/i.test(x));
