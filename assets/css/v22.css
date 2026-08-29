@@ -1,0 +1,209 @@
+/* V2.2 stability + Initial-release feature restoration */
+.mw-image-repairing{filter:saturate(.78) contrast(.92);opacity:.72}
+.mw-vehicle-media{background:linear-gradient(135deg,#dfe4e5,#f4f3ee)}
+html[data-theme="dark"] .mw-vehicle-media{background:linear-gradient(135deg,#172029,#0d1319)}
+
+/* Keep section actions and rail controls in separate layout rows.
+   This prevents View more pills from colliding with carousel arrows. */
+.mw-vehicle-row-wrap>.mw-row-arrows{
+  position:static!important;
+  justify-content:flex-end;
+  margin:-10px 0 14px;
+}
+.mw-collection-shell>.mw-rail-actions{
+  position:static!important;
+  justify-content:flex-end;
+  margin:-10px 0 14px;
+}
+
+/* Restored global back-to-top affordance from Initial release. */
+.mw-back-top{
+  position:fixed;
+  z-index:165;
+  right:24px;
+  bottom:24px;
+  width:52px;
+  height:52px;
+  display:grid;
+  place-items:center;
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:50%;
+  background:#101827;
+  color:#fff;
+  box-shadow:0 18px 45px rgba(7,12,18,.22);
+  opacity:0;
+  visibility:hidden;
+  transform:translateY(14px) scale(.94);
+  transition:opacity .28s var(--ease),transform .28s var(--ease),visibility .28s,background .22s;
+}
+.mw-back-top:hover{transform:translateY(-3px) scale(1.02);background:var(--green)}
+.mw-back-top.is-visible{opacity:1;visibility:visible;transform:none}
+.mw-back-top span{font-size:19px;line-height:1}
+html[data-theme="dark"] .mw-back-top{
+  background:#eef3f5;
+  color:#070a0f;
+  border-color:#fff;
+  box-shadow:0 20px 55px rgba(0,0,0,.42);
+}
+html[data-theme="dark"] .mw-back-top:hover{background:var(--green);color:#07120f}
+
+/* Fleet hero: preserve the polished split layout, while restoring the
+   orbit/particle depth that made the Initial release's hero distinctive. */
+body[data-page="fleet"] .mw-page-hero-split{
+  overflow:hidden;
+  position:relative;
+  isolation:isolate;
+}
+body[data-page="fleet"] .mw-page-hero-split:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-2;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 83% 36%,rgba(8,127,104,.085),transparent 25rem),
+    radial-gradient(circle at 67% 78%,rgba(243,107,45,.055),transparent 23rem);
+}
+body[data-page="fleet"] .mw-page-hero-media{
+  overflow:visible;
+  min-height:470px;
+  background:transparent;
+  box-shadow:none;
+  isolation:isolate;
+}
+body[data-page="fleet"] .mw-page-hero-media>img{
+  inset:34px 24px 22px 32px;
+  width:calc(100% - 56px);
+  height:calc(100% - 56px);
+  z-index:3;
+  border-radius:34px;
+  box-shadow:0 34px 90px rgba(11,14,19,.17);
+}
+body[data-page="fleet"] .mw-page-hero-media:before,
+body[data-page="fleet"] .mw-page-hero-media:after{
+  content:"";
+  position:absolute;
+  pointer-events:none;
+  border-radius:50%;
+  z-index:0;
+}
+body[data-page="fleet"] .mw-page-hero-media:before{
+  width:430px;
+  height:430px;
+  right:-58px;
+  top:-18px;
+  border:1px solid rgba(8,127,104,.22);
+  box-shadow:inset 0 0 90px rgba(80,212,177,.045);
+  animation:mwFleetOrbit 23s linear infinite;
+}
+body[data-page="fleet"] .mw-page-hero-media:after{
+  width:245px;
+  height:245px;
+  left:-48px;
+  bottom:-28px;
+  border:1px dashed rgba(243,107,45,.26);
+  animation:mwFleetOrbit 16s linear infinite reverse;
+}
+@keyframes mwFleetOrbit{to{transform:rotate(360deg)}}
+.mw-fleet-ambient{position:absolute;inset:0;z-index:4;pointer-events:none}
+.mw-fleet-orbit{
+  position:absolute;
+  border-radius:50%;
+  border:1px solid rgba(8,127,104,.16);
+  animation:mwFleetOrbit 19s linear infinite;
+}
+.mw-fleet-orbit:before{
+  content:"";
+  position:absolute;
+  width:9px;height:9px;border-radius:50%;
+  left:50%;top:-5px;
+  background:var(--green2);
+  box-shadow:0 0 22px rgba(10,161,127,.45)
+}
+.mw-fleet-orbit-a{width:355px;height:355px;right:4px;top:24px}
+.mw-fleet-orbit-b{
+  width:210px;height:210px;left:0;bottom:14px;
+  border-style:dashed;border-color:rgba(243,107,45,.22);
+  animation-duration:13s;animation-direction:reverse
+}
+.mw-fleet-orbit-b:before{background:var(--orange);box-shadow:0 0 22px rgba(243,107,45,.35)}
+.mw-fleet-particles{position:absolute;inset:25px;overflow:hidden;border-radius:40px}
+.mw-fleet-particles b{
+  position:absolute;left:var(--x);top:var(--y);
+  width:3px;height:3px;border-radius:50%;
+  background:rgba(255,255,255,.9);
+  box-shadow:0 0 10px rgba(80,212,177,.62);
+  animation:mwFleetParticle var(--duration) var(--delay) ease-in-out infinite
+}
+@keyframes mwFleetParticle{
+  0%,100%{transform:translateY(0) scale(.7);opacity:.18}
+  50%{transform:translateY(-17px) scale(1.25);opacity:.9}
+}
+.mw-fleet-float{
+  position:absolute;
+  z-index:6;
+  display:grid;
+  gap:2px;
+  padding:12px 14px;
+  border:1px solid rgba(255,255,255,.52);
+  border-radius:16px;
+  background:rgba(255,255,255,.86);
+  color:#0b0e13;
+  box-shadow:0 16px 44px rgba(11,14,19,.1);
+  backdrop-filter:blur(15px);
+  animation:mwFleetFloat 5.2s ease-in-out infinite
+}
+.mw-fleet-float small{font-size:7px;letter-spacing:.13em;color:#72808e}
+.mw-fleet-float strong{font-size:11px}
+.mw-fleet-float-search{left:-4px;top:95px}
+.mw-fleet-float-count{right:3px;top:10px;display:flex;align-items:end;gap:7px}
+.mw-fleet-float-count strong{font-size:23px}
+.mw-fleet-float-count small{padding-bottom:4px}
+@keyframes mwFleetFloat{50%{transform:translateY(-9px) rotate(.45deg)}}
+body[data-page="fleet"] .mw-page-hero-media-note{z-index:7;left:52px;bottom:42px}
+
+/* Stabilize the sticky utility dock during compact transitions. */
+.mw-utility-bar{contain:layout paint style}
+.mw-utility-bar .mw-container{transform:translateZ(0)}
+.mw-utility-bar.is-compact .mw-global-search,
+.mw-utility-bar.is-compact .mw-location-control{will-change:padding,border-radius}
+.mw-utility-bar.is-compact .mw-search-field,
+.mw-utility-bar.is-compact .mw-location-inner{will-change:height}
+
+/* Card consistency audit: metadata, action and media regions stay aligned
+   even when names/spec strings have different lengths. */
+.mw-vehicle-card{display:flex;flex-direction:column;min-height:100%}
+.mw-vehicle-copy{display:flex;flex-direction:column;flex:1}
+.mw-vehicle-title h3{min-height:44px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.mw-specs{min-height:58px;align-content:flex-start}
+.mw-vehicle-bottom{margin-top:auto}
+
+@media(max-width:980px){
+  body[data-page="fleet"] .mw-page-hero-media{min-height:430px}
+  .mw-fleet-float-search{left:5px}
+}
+@media(max-width:760px){
+  .mw-vehicle-row-wrap>.mw-row-arrows,
+  .mw-collection-shell>.mw-rail-actions{margin:0 0 12px}
+  .mw-back-top{right:14px;bottom:14px;width:48px;height:48px}
+  body[data-page="fleet"] .mw-page-hero-media{min-height:350px;margin-top:8px}
+  body[data-page="fleet"] .mw-page-hero-media>img{
+    inset:28px 10px 18px 18px;
+    width:calc(100% - 28px);
+    height:calc(100% - 46px);
+    border-radius:26px
+  }
+  .mw-fleet-float-search{left:0;top:80px}
+  .mw-fleet-float-count{right:0}
+  body[data-page="fleet"] .mw-page-hero-media-note{left:32px;bottom:32px}
+}
+@media(max-width:480px){
+  .mw-fleet-float-search{display:none}
+  .mw-fleet-float-count{top:4px}
+  body[data-page="fleet"] .mw-page-hero-media:before{width:300px;height:300px}
+}
+@media(prefers-reduced-motion:reduce){
+  .mw-fleet-orbit,.mw-fleet-particles b,.mw-fleet-float,
+  body[data-page="fleet"] .mw-page-hero-media:before,
+  body[data-page="fleet"] .mw-page-hero-media:after{animation:none!important}
+}

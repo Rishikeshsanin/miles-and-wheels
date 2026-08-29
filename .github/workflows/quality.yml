@@ -1,7 +1,7 @@
 name: V2.1 storefront quality
 on:
   push:
-    branches: [v2.1/storefront-dark, main]
+    branches: [v2.1/storefront-dark, v2.2/qa-stability, main]
   pull_request:
     branches: [main]
 jobs:
@@ -59,3 +59,16 @@ jobs:
             console.log('Quote API OK')
           })()
           NODE
+
+      - name: Browser regression suite
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+          python3 -m http.server 4173 >/tmp/mw-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:4173/index.html >/dev/null; then break; fi
+            sleep 1
+          done
+          node tests/browser-qa.mjs
