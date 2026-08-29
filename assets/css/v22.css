@@ -162,9 +162,17 @@ body[data-page="fleet"] .mw-page-hero-media:after{
 @keyframes mwFleetFloat{50%{transform:translateY(-9px) rotate(.45deg)}}
 body[data-page="fleet"] .mw-page-hero-media-note{z-index:7;left:52px;bottom:42px}
 
-/* Stabilize the sticky utility dock during compact transitions. */
-.mw-utility-bar{contain:layout paint style}
+/* Stabilize the sticky utility dock during compact transitions without paint
+   containment: paint containment clips the absolutely-positioned search menu. */
+.mw-utility-bar{
+  contain:layout style;
+  overflow:visible!important;
+  z-index:140!important;
+}
 .mw-utility-bar .mw-container{transform:translateZ(0)}
+.mw-global-search{z-index:1}
+.mw-global-search:focus-within{z-index:240}
+.mw-search-results{z-index:999!important}
 .mw-utility-bar.is-compact .mw-global-search,
 .mw-utility-bar.is-compact .mw-location-control{will-change:padding,border-radius}
 .mw-utility-bar.is-compact .mw-search-field,
