@@ -6,7 +6,7 @@ const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 function getTheme(){
   const stored=localStorage.getItem('mw_theme');
   if(stored==='light'||stored==='dark')return stored;
-  return matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
+  return 'light';
 }
 
 function applyTheme(theme,animate=false){
