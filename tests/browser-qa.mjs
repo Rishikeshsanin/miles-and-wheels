@@ -75,7 +75,7 @@ if(!searchOverlayOK)throw new Error('Search results are clipped or covered by pa
 await search.fill('');
 
 await page.evaluate(() => scrollTo(0, 260));
-await page.waitForTimeout(400);
+await page.waitForTimeout(800);
 const samples = [];
 for (let i=0;i<12;i++) {
   samples.push(await page.locator('.mw-utility-bar').evaluate(el => ({
