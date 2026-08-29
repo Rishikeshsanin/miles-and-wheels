@@ -45,21 +45,34 @@ async function openChecked(page, name, route) {
 const page = await context.newPage();
 for (const [name, route] of routes) await openChecked(page, name, route);
 
-// Theme must work without changing product layout.
+// First visit is always light unless the visitor has explicitly saved a preference.
 await page.goto(`${base}/index.html`, { waitUntil: 'domcontentloaded' });
 await page.waitForSelector('#mwThemeToggle');
 const beforeTheme = await page.evaluate(() => document.documentElement.dataset.theme);
+if (beforeTheme !== 'light') throw new Error(`Fresh visitor theme should be light, got ${beforeTheme}`);
 await page.click('#mwThemeToggle');
 const afterTheme = await page.evaluate(() => document.documentElement.dataset.theme);
 if (beforeTheme === afterTheme) throw new Error('Theme toggle did not change theme');
 
-// Search must find the known iQube entry and never show a broken image.
+// Search must find the known iQube entry, never show a broken image, and stay above hero/carousel content.
 const search = page.locator('#mwGlobalSearch');
 await search.fill('iqube');
 await page.waitForSelector('#mwSearchResults:not([hidden]) .mw-search-result', { timeout: 10000 });
 await page.waitForTimeout(1200);
 const searchImageOK = await page.locator('#mwSearchResults .mw-search-result img').first().evaluate(img => img.complete && img.naturalWidth > 0);
 if (!searchImageOK) throw new Error('Search result image fallback failed for iQube');
+const searchOverlayOK = await page.evaluate(() => {
+  const results=document.querySelector('#mwSearchResults');
+  const bar=document.querySelector('.mw-utility-bar');
+  if(!results||!bar)return false;
+  const rr=results.getBoundingClientRect(),br=bar.getBoundingClientRect();
+  if(rr.bottom<=br.bottom+10)return false;
+  const x=Math.max(1,Math.min(innerWidth-2,rr.left+Math.min(90,rr.width/2)));
+  const y=Math.max(1,Math.min(innerHeight-2,rr.top+Math.min(28,rr.height/2)));
+  const top=document.elementFromPoint(x,y);
+  return !!top?.closest('#mwSearchResults');
+});
+if(!searchOverlayOK)throw new Error('Search results are clipped or covered by page/carousel content');
 await search.fill('');
 
 // Sticky search/location dock must remain stable around the compact threshold.
@@ -132,4 +145,4 @@ await mobile.waitForTimeout(100);
 if (await mobile.locator('#mwMobileMenu').evaluate(el => el.hidden)) throw new Error('Mobile menu did not open');
 
 await browser.close();
-console.log('Browser QA OK: 8 routes, desktop/mobile, 96 cards, images, search, theme, sticky dock, compare, cart, profile, back-to-top.');
+console.log('Browser QA OK: 8 routes, desktop/mobile, 96 cards, images, search overlay, light default, theme, sticky dock, compare, cart, profile, back-to-top.');
