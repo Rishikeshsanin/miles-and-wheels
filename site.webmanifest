@@ -1,7 +1,7 @@
 {
   "name": "Miles & Wheels",
   "short_name": "M&W",
-  "start_url": "/",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#f6f5f2",
   "theme_color": "#111827",
