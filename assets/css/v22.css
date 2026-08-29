@@ -191,6 +191,18 @@ body[data-page="fleet"] .mw-page-hero-media-note{z-index:7;left:52px;bottom:42px
   .mw-fleet-float-search{left:5px}
 }
 @media(max-width:760px){
+  .mw-vehicle-row-wrap,.mw-collection-shell{
+    width:100%;
+    max-width:100%;
+    min-width:0;
+    overflow:hidden;
+  }
+  .mw-vehicle-row,.mw-collection-rail{
+    width:100%;
+    max-width:100%;
+    min-width:0;
+    overscroll-behavior-x:contain;
+  }
   .mw-vehicle-row-wrap>.mw-row-arrows,
   .mw-collection-shell>.mw-rail-actions{margin:0 0 12px}
   .mw-back-top{right:14px;bottom:14px;width:48px;height:48px}
