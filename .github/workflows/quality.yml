@@ -13,6 +13,7 @@ jobs:
       - name: JavaScript syntax
         run: |
           node --check app.js
+          node --check motion.js
           node --check api/health.js
           node --check api/quote.js
       - name: Static document integrity
@@ -28,6 +29,7 @@ jobs:
           required = [
               'id="heroSearch"', 'id="fleetGrid"', 'id="cartDrawer"',
               'id="checkoutModal"', 'id="historyModal"', 'id="accountModal"',
+              'motion.css', 'motion.js',
               'Rishikesh M', '+91 90590 76106',
               'https://github.com/Rishikeshsanin/miles-and-wheels'
           ]
@@ -36,7 +38,13 @@ jobs:
           css = Path('styles.css').read_text(encoding='utf-8')
           for breakpoint in ['@media (max-width: 1050px)', '@media (max-width: 760px)', '@media (max-width: 480px)']:
               assert breakpoint in css, f'Missing responsive rule: {breakpoint}'
-          print('HTML/CSS integrity checks passed')
+          motion_css = Path('motion.css').read_text(encoding='utf-8')
+          motion_js = Path('motion.js').read_text(encoding='utf-8')
+          for marker in ['@keyframes fxHeroShine', '@keyframes fxMarquee', '@keyframes fxConfetti', '@media (prefers-reduced-motion:reduce)']:
+              assert marker in motion_css, f'Missing premium motion rule: {marker}'
+          for marker in ['setupRevealSystem', 'setupPointer', 'bindVehicleCards', 'setupSuccessFeedback', 'setupHeroParallax']:
+              assert marker in motion_js, f'Missing interaction module: {marker}'
+          print('HTML/CSS/motion integrity checks passed')
           PY
       - name: Stateless quote API test
         run: |
