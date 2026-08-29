@@ -22,8 +22,8 @@ async function openChecked(page, name, route) {
   page.on('console', msg => { if (msg.type() === 'error') consoleErrors.push(msg.text()); });
   const response = await page.goto(`${base}${route}`, { waitUntil: 'domcontentloaded', timeout: 30000 });
   if (!response || !response.ok()) throw new Error(`${name}: HTTP ${response?.status()}`);
-  await page.waitForSelector('#siteHeader .mw-header', { timeout: 10000 });
-  await page.waitForSelector('#siteFooter .mw-footer', { timeout: 10000 });
+  await page.waitForSelector('.mw-header', { timeout: 10000 });
+  await page.waitForSelector('.mw-footer', { timeout: 10000 });
   await page.waitForTimeout(500);
 
   const overflow = await page.evaluate(() => ({
