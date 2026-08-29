@@ -1,1 +1,1 @@
-module.exports=function handler(req,res){res.setHeader('Cache-Control','no-store');return res.status(200).json({ok:true,service:'miles-and-wheels',release:'v2-frontend-flagship',storage:'none'})};
+module.exports=function handler(req,res){res.setHeader('Cache-Control','no-store');return res.status(200).json({ok:true,service:'miles-and-wheels',release:'v2.1-storefront-dark',storage:'none',catalog:96})};

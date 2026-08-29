@@ -1,1 +1,54 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Fleet — Miles & Wheels</title><link rel="icon" href="assets/favicon.svg"><link rel="stylesheet" href="assets/css/v2.css"></head><body data-page="fleet"><div id="siteHeader"></div><main class="mw-page"><section class="mw-page-hero"><div class="mw-container"><span class="mw-kicker">The complete fleet</span><h1>Sixty ways to move.</h1><p>Filter by vehicle type, fuel, transmission, seating and price. Compare up to three rides side by side before adding them to your trip.</p></div></section><section><div class="mw-container mw-fleet-layout"><aside class="mw-filters"><div class="mw-filter-group"><h3>Vehicle type</h3><label><input data-filter-type value="car" type="checkbox"> Cars</label><label><input data-filter-type value="bike" type="checkbox"> Motorcycles</label><label><input data-filter-type value="scooter" type="checkbox"> Scooters</label></div><div class="mw-filter-group"><h3>Fuel</h3><label><input data-filter-fuel value="Petrol" type="checkbox"> Petrol</label><label><input data-filter-fuel value="Diesel" type="checkbox"> Diesel</label><label><input data-filter-fuel value="Hybrid" type="checkbox"> Hybrid</label><label><input data-filter-fuel value="Electric" type="checkbox"> Electric</label></div><div class="mw-filter-group"><h3>Transmission</h3><label><input data-filter-trans value="Automatic" type="checkbox"> Automatic</label><label><input data-filter-trans value="Manual" type="checkbox"> Manual / geared</label></div><div class="mw-filter-group"><h3>Capacity</h3><label><input data-filter-seats value="2" type="checkbox"> 2 riders</label><label><input data-filter-seats value="4" type="checkbox"> 4 seats</label><label><input data-filter-seats value="5" type="checkbox"> 5 seats</label><label><input data-filter-seats value="7" type="checkbox"> 7 seats</label></div><div class="mw-filter-group"><h3>Daily price</h3><input id="priceRange" type="range" min="500" max="8000" step="100" value="8000"><div class="mw-filter-price"><span>₹500</span><strong id="priceMaxLabel">₹8,000</strong></div></div><button class="mw-filter-clear" id="clearFilters" type="button">Clear all filters</button></aside><div><div class="mw-fleet-main-head"><span class="mw-fleet-count" id="fleetResultCount">60 rides</span><select id="fleetSort"><option value="popular">Most popular</option><option value="low">Price: low to high</option><option value="high">Price: high to low</option><option value="rating">Highest rated</option><option value="name">Name A–Z</option></select></div><div class="mw-fleet-grid" id="fleetPageGrid"></div><div class="mw-history-empty" id="fleetEmpty" hidden><strong>No rides match those filters.</strong><span>Clear a filter or try another search.</span></div></div></div></section><div class="mw-compare-bar" id="compareBar"><div class="mw-compare-items" id="compareItems"></div><button id="compareGo" type="button">Compare rides</button></div></main><div id="siteFooter"></div><script type="module" src="assets/js/site.js"></script><script type="module" src="assets/js/fleet.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f4f3ee">
+  <meta name="description" content="Explore 96 cars, motorcycles and scooters from Miles & Wheels.">
+  <title>Fleet — Miles & Wheels</title>
+  <link rel="icon" href="assets/favicon.svg">
+  <script>(()=>{try{const t=localStorage.getItem('mw_theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.dataset.theme=t;document.documentElement.style.colorScheme=t}catch{}})()</script>
+  <link rel="stylesheet" href="assets/css/v2.css">
+  <link rel="stylesheet" href="assets/css/v21.css">
+</head>
+<body data-page="fleet">
+  <div id="siteHeader"></div>
+  <main class="mw-page">
+    <section class="mw-page-hero mw-page-hero-split">
+      <div class="mw-container mw-page-hero-inner">
+        <div class="mw-page-hero-copy">
+          <span class="mw-kicker">The complete fleet</span>
+          <h1>Ninety-six ways to move.</h1>
+          <p>Filter by vehicle type, fuel, transmission, seating and price. Compare up to three rides side by side before adding them to your trip.</p>
+        </div>
+        <div class="mw-page-hero-media" aria-label="Featured car">
+          <img src="https://images.unsplash.com/photo-1494976388531-d1058494cdd8?auto=format&fit=crop&w=1500&q=92" alt="Performance car on an open road">
+          <div class="mw-page-hero-media-note"><small>Signature fleet view</small><strong>Cars · Bikes · Scooters · EVs</strong></div>
+        </div>
+      </div>
+    </section>
+    <section>
+      <div class="mw-container mw-fleet-layout">
+        <aside class="mw-filters">
+          <div class="mw-filter-group"><h3>Vehicle type</h3><label><input data-filter-type value="car" type="checkbox"> Cars</label><label><input data-filter-type value="bike" type="checkbox"> Motorcycles</label><label><input data-filter-type value="scooter" type="checkbox"> Scooters</label></div>
+          <div class="mw-filter-group"><h3>Fuel</h3><label><input data-filter-fuel value="Petrol" type="checkbox"> Petrol</label><label><input data-filter-fuel value="Diesel" type="checkbox"> Diesel</label><label><input data-filter-fuel value="Hybrid" type="checkbox"> Hybrid</label><label><input data-filter-fuel value="Electric" type="checkbox"> Electric</label></div>
+          <div class="mw-filter-group"><h3>Transmission</h3><label><input data-filter-trans value="Automatic" type="checkbox"> Automatic</label><label><input data-filter-trans value="Manual" type="checkbox"> Manual / geared</label></div>
+          <div class="mw-filter-group"><h3>Capacity</h3><label><input data-filter-seats value="2" type="checkbox"> 2 riders</label><label><input data-filter-seats value="4" type="checkbox"> 4 seats</label><label><input data-filter-seats value="5" type="checkbox"> 5 seats</label><label><input data-filter-seats value="7" type="checkbox"> 7 seats</label></div>
+          <div class="mw-filter-group"><h3>Daily price</h3><input id="priceRange" type="range" min="500" max="12000" step="100" value="12000"><div class="mw-filter-price"><span>₹500</span><strong id="priceMaxLabel">₹12,000</strong></div></div>
+          <button class="mw-filter-clear" id="clearFilters" type="button">Clear all filters</button>
+        </aside>
+        <div>
+          <div class="mw-fleet-main-head"><span class="mw-fleet-count" id="fleetResultCount">96 rides</span><select id="fleetSort"><option value="popular">Most popular</option><option value="low">Price: low to high</option><option value="high">Price: high to low</option><option value="rating">Highest rated</option><option value="name">Name A–Z</option></select></div>
+          <div class="mw-fleet-grid" id="fleetPageGrid"></div>
+          <div class="mw-history-empty" id="fleetEmpty" hidden><strong>No rides match those filters.</strong><span>Clear a filter or try another search.</span></div>
+        </div>
+      </div>
+    </section>
+    <div class="mw-compare-bar" id="compareBar"><div class="mw-compare-items" id="compareItems"></div><button id="compareGo" type="button">Compare rides</button></div>
+  </main>
+  <div id="siteFooter"></div>
+  <script type="module" src="assets/js/site.js"></script>
+  <script type="module" src="assets/js/fleet.js"></script>
+  <script type="module" src="assets/js/v21.js"></script>
+</body>
+</html>

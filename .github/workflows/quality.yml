@@ -1,7 +1,7 @@
-name: V2 quality
+name: V2.1 storefront quality
 on:
   push:
-    branches: [v2/frontend-flagship]
+    branches: [v2.1/storefront-dark, main]
   pull_request:
     branches: [main]
 jobs:
@@ -21,26 +21,41 @@ jobs:
           pages=['index.html','fleet.html','vehicle.html','compare.html','experiences.html','cities.html','business.html','support.html']
           class P(HTMLParser): pass
           for name in pages:
-              text=Path(name).read_text(); P().feed(text)
-              assert 'assets/css/v2.css' in text and 'assets/js/site.js' in text
+              text=Path(name).read_text()
+              P().feed(text)
+              assert 'assets/css/v2.css' in text
+              assert 'assets/css/v21.css' in text
+              assert 'assets/js/site.js' in text
+              assert 'assets/js/v21.js' in text
           data=Path('assets/js/vehicles.js').read_text()
-          matches=re.findall(r"\['[^']+','[^']+','[^']+','(car|bike|scooter)'",data)
-          assert len(matches)==60, len(matches)
-          assert matches.count('car')==32 and matches.count('bike')==18 and matches.count('scooter')==10
+          matches=re.findall(r'\["[^"]+","[^"]+","[^"]+","(car|bike|scooter)"',data)
+          assert len(matches)==96, len(matches)
+          assert matches.count('car')==48 and matches.count('bike')==30 and matches.count('scooter')==18
+          index=Path('index.html').read_text()
+          for token in ['homeHeroCarousel','homeFleetGrid','homeCollectionRail','topRatedRow','budgetGrid','brandTrack','mw-business-preview','mw-support-preview']:
+              assert token in index, token
+          css=Path('assets/css/v21.css').read_text()
+          for token in ['data-theme="dark"','is-compact','mw-theme-toggle','mw-collection-rail','mw-page-hero-split']:
+              assert token in css, token
+          v21=Path('assets/js/v21.js').read_text()
+          for token in ['mw_theme','mwThemeToggle','compactUtility','mw-scroll-progress']:
+              assert token in v21, token
           customer=' '.join(Path(x).read_text().lower() for x in pages)
           for forbidden in ['privacy in v1','showcase build','demo booking','display only']:
               assert forbidden not in customer, forbidden
-          assert 'homeHeroCarousel' in Path('index.html').read_text()
-          assert 'compareBar' in Path('fleet.html').read_text()
-          site=Path('assets/js/site.js').read_text()
-          for token in ['mw-utility-bar','mwGlobalSearch','mwLocationControl','mwPromo']:
-              assert token in site
-          print('V2 structure OK')
+          assert 'max="12000"' in Path('fleet.html').read_text()
+          print('V2.1 storefront structure OK')
           PY
       - name: Stateless quote API
         run: |
           node <<'NODE'
           const handler=require('./api/quote.js');
           function call(body){return new Promise(resolve=>{const out={};const req={method:'POST',body};const res={setHeader(){},status(c){out.status=c;return this},json(d){out.data=d;resolve(out)}};handler(req,res)})}
-          (async()=>{let r=await call({items:[{id:'swift',quantity:2,days:3},{id:'activa6g',quantity:1,days:2}]});if(r.status!==200||!r.data.ok||r.data.storage!=='none')process.exit(1);r=await call({items:[{id:'swift',quantity:1.5,days:2}]});if(r.status!==400)process.exit(1);console.log('Quote API OK')})()
+          (async()=>{
+            let r=await call({items:[{id:'bmw-3',quantity:1,days:2},{id:'ninja650',quantity:1,days:3},{id:'activa6g',quantity:2,days:1}]});
+            if(r.status!==200||!r.data.ok||r.data.storage!=='none')process.exit(1);
+            r=await call({items:[{id:'swift',quantity:1.5,days:2}]});
+            if(r.status!==400)process.exit(1);
+            console.log('Quote API OK')
+          })()
           NODE
