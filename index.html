@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#111827" />
+  <meta name="description" content="Miles & Wheels — a privacy-first car and bike rental experience across India." />
+  <meta property="og:title" content="Miles & Wheels — Cars & Bikes Across India" />
+  <meta property="og:description" content="Browse popular cars and bikes, build your trip and place a private, device-local booking." />
+  <meta property="og:type" content="website" />
+  <title>Miles & Wheels — Car & Bike Rentals Across India</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="manifest" href="site.webmanifest" />
+  <link rel="preconnect" href="https://images.unsplash.com" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header" id="top">
+    <div class="container nav-wrap">
+      <a class="brand" href="#top" aria-label="Miles & Wheels home">
+        <span class="brand-mark" aria-hidden="true">M&amp;W</span>
+        <span class="brand-copy"><strong>Miles &amp; Wheels</strong><small>Cars &amp; bikes across India</small></span>
+      </a>
+
+      <nav class="desktop-nav" aria-label="Primary navigation">
+        <a href="#fleet">Fleet</a>
+        <a href="#popular">Popular</a>
+        <a href="#how-it-works">How it works</a>
+        <a href="#why-us">Why us</a>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="icon-btn account-btn" id="accountButton" type="button" aria-label="Open account menu">
+          <span class="avatar" id="accountAvatar">G</span>
+          <span class="account-label" id="accountLabel">Guest</span>
+        </button>
+        <button class="cart-btn" id="cartButton" type="button" aria-label="Open booking cart">
+          <span aria-hidden="true">Trip</span>
+          <span class="cart-count" id="cartCount">0</span>
+        </button>
+        <button class="menu-btn" id="menuButton" type="button" aria-label="Open menu" aria-expanded="false"><span></span><span></span></button>
+      </div>
+    </div>
+
+    <div class="mobile-menu" id="mobileMenu" hidden>
+      <a href="#fleet">Fleet</a><a href="#popular">Popular</a><a href="#how-it-works">How it works</a><a href="#why-us">Why us</a>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero section-pad">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">Self-drive rentals, simplified</p>
+          <h1>Choose your wheels.<br><span>Own the road.</span></h1>
+          <p class="hero-lead">Cars for city runs and road trips. Scooters and motorcycles for everything in between. One clean rental experience built for India.</p>
+
+          <div class="hero-search-card">
+            <label class="search-label" for="heroSearch">What do you want to drive?</label>
+            <div class="search-box-wrap">
+              <span class="search-icon" aria-hidden="true">⌕</span>
+              <input id="heroSearch" class="search-input" type="search" autocomplete="off" placeholder="Try ‘Swift’, ‘Activa’, ‘SUV’ or even ‘swft’" aria-controls="searchSuggestions" />
+              <button class="clear-search" id="clearSearch" type="button" aria-label="Clear search" hidden>×</button>
+            </div>
+            <div class="search-suggestions" id="searchSuggestions" role="listbox" hidden></div>
+            <div class="hero-search-meta">
+              <span>Live typo-tolerant suggestions</span>
+              <button class="text-link" id="browseAllButton" type="button">Browse all vehicles →</button>
+            </div>
+          </div>
+
+          <div class="location-pill" id="locationPill">
+            <span class="location-dot" aria-hidden="true"></span>
+            <div>
+              <strong id="locationTitle">Location not shared</strong>
+              <small id="locationSubtitle">Used only to show where you are. It never changes the website.</small>
+            </div>
+            <button id="detectLocationButton" type="button">Use my location</button>
+          </div>
+
+          <div class="trust-row" aria-label="Service highlights">
+            <span>✓ No account required</span>
+            <span>✓ Transparent demo pricing</span>
+            <span>✓ Device-local history</span>
+          </div>
+        </div>
+
+        <div class="hero-visual" aria-label="Premium rental car on an open road">
+          <div class="hero-image"></div>
+          <div class="hero-price-card">
+            <small>Popular this week</small>
+            <strong>Maruti Swift</strong>
+            <span>from ₹2,520 / day</span>
+          </div>
+          <div class="hero-stat-card"><strong>20+</strong><span>popular rides</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="quick-categories">
+      <div class="container category-strip">
+        <button class="category-chip active" data-filter="all" type="button"><span>All rides</span><strong>20</strong></button>
+        <button class="category-chip" data-filter="car" type="button"><span>Cars</span><strong>10</strong></button>
+        <button class="category-chip" data-filter="bike" type="button"><span>Bikes</span><strong>7</strong></button>
+        <button class="category-chip" data-filter="scooter" type="button"><span>Scooters</span><strong>3</strong></button>
+      </div>
+    </section>
+
+    <section class="section-pad" id="popular">
+      <div class="container">
+        <div class="section-heading split-heading">
+          <div><p class="eyebrow">Popular picks</p><h2>Most booked-style rides</h2></div>
+          <p>Familiar models, sensible demo pricing and clear rental details.</p>
+        </div>
+        <div class="popular-grid" id="popularGrid"></div>
+      </div>
+    </section>
+
+    <section class="fleet-section section-pad" id="fleet">
+      <div class="container">
+        <div class="section-heading split-heading">
+          <div><p class="eyebrow">Explore the fleet</p><h2>Find a ride that fits your plan</h2></div>
+          <p id="fleetCountText">Showing all vehicles</p>
+        </div>
+
+        <div class="fleet-toolbar">
+          <div class="type-tabs" role="tablist" aria-label="Vehicle type">
+            <button class="type-tab active" data-type="all" role="tab" type="button">All</button>
+            <button class="type-tab" data-type="car" role="tab" type="button">Cars</button>
+            <button class="type-tab" data-type="bike" role="tab" type="button">Bikes</button>
+            <button class="type-tab" data-type="scooter" role="tab" type="button">Scooters</button>
+          </div>
+          <div class="toolbar-right">
+            <label class="compact-search"><span class="sr-only">Search fleet</span><input id="fleetSearch" type="search" placeholder="Search fleet" autocomplete="off" /></label>
+            <select id="sortSelect" aria-label="Sort vehicles">
+              <option value="popular">Most popular</option>
+              <option value="low">Price: low to high</option>
+              <option value="high">Price: high to low</option>
+              <option value="name">Name A–Z</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="fleet-grid" id="fleetGrid"></div>
+        <div class="empty-state" id="emptyState" hidden>
+          <div class="empty-icon">⌕</div><h3>No exact match</h3><p>Try a model, brand, category, fuel type or a close spelling.</p><button class="secondary-btn" id="resetFiltersButton" type="button">Reset search</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="cities-section section-pad">
+      <div class="container">
+        <div class="section-heading split-heading">
+          <div><p class="eyebrow">Across India</p><h2>Built for trips everywhere</h2></div>
+          <p>City examples are visual only in this release—your location never changes the fleet.</p>
+        </div>
+        <div class="city-grid">
+          <article><span>01</span><h3>Bengaluru</h3><p>City commutes & weekend escapes</p></article>
+          <article><span>02</span><h3>Hyderabad</h3><p>Business days & highway runs</p></article>
+          <article><span>03</span><h3>Mumbai</h3><p>Flexible urban travel</p></article>
+          <article><span>04</span><h3>Delhi NCR</h3><p>Daily drives & long weekends</p></article>
+          <article><span>05</span><h3>Chennai</h3><p>Coastal routes & city rides</p></article>
+          <article><span>06</span><h3>Goa</h3><p>Scooters, bikes & relaxed drives</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="how-section section-pad" id="how-it-works">
+      <div class="container">
+        <div class="section-heading centered"><p class="eyebrow">Three simple steps</p><h2>From search to road-ready</h2></div>
+        <div class="steps-grid">
+          <article><span>1</span><h3>Pick your ride</h3><p>Search by model, type or even a slightly misspelled name. Add one or more vehicles to your trip.</p></article>
+          <article><span>2</span><h3>Set the rental</h3><p>Choose integer quantity and rental days, review inclusions and see a clear price breakdown.</p></article>
+          <article><span>3</span><h3>Place your booking</h3><p>Complete the demo booking without sharing personal data. Your history remains on this device only.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="why-section section-pad" id="why-us">
+      <div class="container why-grid">
+        <div class="why-copy"><p class="eyebrow">Designed around trust</p><h2>A rental flow that doesn’t ask for everything.</h2><p>No email. No password. No account database. No hidden location-based pricing. This release proves the customer experience first, before adding real business operations later.</p><button class="primary-btn" id="privacyButton" type="button">See privacy details</button></div>
+        <div class="benefit-grid">
+          <article><strong>01</strong><h3>Private by default</h3><p>Name and booking history stay in your browser.</p></article>
+          <article><strong>02</strong><h3>Clear pricing</h3><p>Base rent, service fee, tax and deposit are shown before booking.</p></article>
+          <article><strong>03</strong><h3>Real search feel</h3><p>Suggestions update as you type and tolerate common spelling mistakes.</p></article>
+          <article><strong>04</strong><h3>Responsive everywhere</h3><p>Built for desktop, laptop, tablet and mobile without feature loss.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="faq-section section-pad">
+      <div class="container narrow">
+        <div class="section-heading centered"><p class="eyebrow">Before you book</p><h2>Frequently asked</h2></div>
+        <div class="faq-list">
+          <details><summary>Is this a live commercial rental service?</summary><p>Not yet. This release is a production-style product demo. It does not collect payment or reserve real inventory.</p></details>
+          <details><summary>Does sharing my location change vehicles or prices?</summary><p>No. Location is shown only as a convenience label. The same vehicles, prices and sections remain visible.</p></details>
+          <details><summary>What is stored when I create an account?</summary><p>Only the display name you enter, and only in this browser. There is no server-side user account in this release.</p></details>
+          <details><summary>Where does my booking history go?</summary><p>Booking history is saved locally on this device so the History screen works without a database.</p></details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div><a class="brand footer-brand" href="#top"><span class="brand-mark">M&amp;W</span><span class="brand-copy"><strong>Miles &amp; Wheels</strong><small>Cars &amp; bikes across India</small></span></a><p>Privacy-first rental storefront concept built to feel ready for a real business backend later.</p></div>
+      <div><h3>Explore</h3><a href="#fleet">Fleet</a><a href="#popular">Popular rides</a><a href="#how-it-works">How it works</a><a href="#why-us">Privacy</a></div>
+      <div><h3>Project</h3><a href="https://github.com/Rishikeshsanin/miles-and-wheels" target="_blank" rel="noreferrer">GitHub repository ↗</a><button class="footer-link" id="historyFooterButton" type="button">Booking history</button><button class="footer-link" id="clearDataButton" type="button">Clear local data</button></div>
+      <div class="credits"><h3>Built by</h3><strong>Rishikesh M</strong><a href="tel:+919059076106">+91 90590 76106</a><span>Portfolio project · India</span></div>
+    </div>
+    <div class="container footer-bottom"><span>© <span id="year"></span> Miles &amp; Wheels.</span><span>Demo release · No real payment collected.</span></div>
+  </footer>
+
+  <div class="scrim" id="scrim" hidden></div>
+
+  <aside class="drawer" id="cartDrawer" aria-labelledby="cartDrawerTitle" aria-hidden="true">
+    <div class="drawer-header"><div><small>Your trip</small><h2 id="cartDrawerTitle">Booking cart</h2></div><button class="close-btn" data-close="drawer" type="button" aria-label="Close cart">×</button></div>
+    <div class="drawer-body" id="cartItems"></div>
+    <div class="drawer-footer" id="cartFooter"></div>
+  </aside>
+
+  <div class="modal" id="accountModal" role="dialog" aria-modal="true" aria-labelledby="accountModalTitle" hidden>
+    <div class="modal-card small-modal">
+      <button class="close-btn modal-close" type="button" aria-label="Close">×</button>
+      <p class="eyebrow">Device-only profile</p><h2 id="accountModalTitle">Create account or sign in</h2>
+      <p>No email or password. Your name is stored only in this browser for display.</p>
+      <form id="accountForm">
+        <label for="nameInput">Your name</label><input id="nameInput" name="name" maxlength="40" required placeholder="e.g. Rishi" autocomplete="name" />
+        <button class="primary-btn full-btn" type="submit">Continue</button>
+      </form>
+      <button class="secondary-btn full-btn" id="showHistoryButton" type="button">View local booking history</button>
+      <button class="text-danger full-btn" id="signOutButton" type="button" hidden>Sign out</button>
+    </div>
+  </div>
+
+  <div class="modal" id="checkoutModal" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle" hidden>
+    <div class="modal-card checkout-card">
+      <button class="close-btn modal-close" type="button" aria-label="Close">×</button>
+      <div class="checkout-grid">
+        <div>
+          <p class="eyebrow">Final review</p><h2 id="checkoutTitle">Complete your booking</h2>
+          <p>Nothing is transmitted or charged. This creates a local demo order on this device.</p>
+          <form id="checkoutForm" class="checkout-form">
+            <div class="field-grid">
+              <label>Pickup date<input id="pickupDate" type="date" required /></label>
+              <label>Pickup time<input id="pickupTime" type="time" required value="10:00" /></label>
+            </div>
+            <label>Pickup note / area<input id="pickupArea" maxlength="80" placeholder="e.g. Koramangala, Bengaluru" required /></label>
+            <label class="check-row"><input id="licenseCheck" type="checkbox" required /><span>I understand a valid driving licence and original ID would be required for a real rental.</span></label>
+            <button class="primary-btn full-btn" type="submit">Place demo booking</button>
+          </form>
+        </div>
+        <div class="checkout-summary" id="checkoutSummary"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="historyModal" role="dialog" aria-modal="true" aria-labelledby="historyTitle" hidden>
+    <div class="modal-card history-card">
+      <button class="close-btn modal-close" type="button" aria-label="Close">×</button>
+      <p class="eyebrow">Stored on this device</p><h2 id="historyTitle">Booking history</h2>
+      <div id="historyList"></div>
+    </div>
+  </div>
+
+  <div class="modal" id="successModal" role="dialog" aria-modal="true" aria-labelledby="successTitle" hidden>
+    <div class="modal-card success-card">
+      <div class="success-mark">✓</div><p class="eyebrow">Booking placed</p><h2 id="successTitle">Your trip is in the books.</h2>
+      <p id="successCopy">Your demo booking has been stored locally on this device.</p>
+      <div class="success-details" id="successDetails"></div>
+      <button class="primary-btn full-btn" id="successDoneButton" type="button">Back to fleet</button>
+      <button class="secondary-btn full-btn" id="successHistoryButton" type="button">View booking history</button>
+    </div>
+  </div>
+
+  <div class="modal" id="privacyModal" role="dialog" aria-modal="true" aria-labelledby="privacyTitle" hidden>
+    <div class="modal-card small-modal">
+      <button class="close-btn modal-close" type="button" aria-label="Close">×</button>
+      <p class="eyebrow">Privacy in v1</p><h2 id="privacyTitle">What stays on your device</h2>
+      <ul class="privacy-list"><li>Display name</li><li>Cart contents</li><li>Booking history</li><li>Location label, if you choose to save it during the session</li></ul>
+      <p>No password, email, phone number, payment details or account record is sent to a backend in this release.</p>
+      <button class="secondary-btn full-btn" id="privacyDoneButton" type="button">Got it</button>
+    </div>
+  </div>
+
+  <div class="toast-stack" id="toastStack" aria-live="polite"></div>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
